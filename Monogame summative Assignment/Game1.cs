@@ -17,9 +17,12 @@ namespace Monogame_summative_Assignment
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
+        SpriteFont startFont;
+
         Texture2D billyBoxTexture;
         Texture2D bombTexture;
         Texture2D sidewalkTexture;
+        Texture2D sidewalkIntroTexture;
 
         Rectangle billyBoxRect;
         Rectangle bombRect;
@@ -47,7 +50,7 @@ namespace Monogame_summative_Assignment
             _graphics.PreferredBackBufferHeight = window.Height;
             _graphics.ApplyChanges();
 
-            billyBoxRect = new Rectangle(0,0,100,100);
+            billyBoxRect = new Rectangle(-50,250,250,200);
 
             screen = Screen.Intro;
 
@@ -65,6 +68,10 @@ namespace Monogame_summative_Assignment
             bombTexture = Content.Load<Texture2D>("bombYay");
 
             sidewalkTexture = Content.Load<Texture2D>("sidewalk");
+
+            sidewalkIntroTexture = Content.Load<Texture2D>("sidewalkIntro");
+
+            startFont = Content.Load<SpriteFont>("spriteFont");
         }
 
         protected override void Update(GameTime gameTime)
@@ -77,7 +84,13 @@ namespace Monogame_summative_Assignment
 
             // TODO: Add your update logic here
 
-
+            if (screen == Screen.Intro)
+            {
+                if (mouseState.LeftButton == ButtonState.Pressed)
+                {
+                    screen = Screen.Screen1;
+                }
+            }
 
             base.Update(gameTime);
         }
@@ -90,8 +103,18 @@ namespace Monogame_summative_Assignment
 
             _spriteBatch.Begin();
 
+            if (screen == Screen.Intro)
+            {
+                _spriteBatch.Draw(sidewalkIntroTexture, new Vector2(0,0), Color.White);
+
+                _spriteBatch.DrawString(startFont, "Click to Start", new Vector2(250,525), Color.White);
+            }
+
             if (screen == Screen.Screen1)
             {
+
+                _spriteBatch.Draw(sidewalkTexture, new Vector2(0, 0), Color.White);
+
                 _spriteBatch.Draw(billyBoxTexture, billyBoxRect, Color.White);
             }
 
