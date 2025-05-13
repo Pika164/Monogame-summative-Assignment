@@ -9,6 +9,7 @@ namespace Monogame_summative_Assignment
     {
         Intro,
         Screen1,
+        Screen2,
         End
     }
 
@@ -32,6 +33,8 @@ namespace Monogame_summative_Assignment
 
         MouseState mouseState;
 
+        float seconds;
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -52,8 +55,11 @@ namespace Monogame_summative_Assignment
 
             billyBoxRect = new Rectangle(-50,250,250,200);
 
+            bombRect = new Rectangle(0,0,250,200);
+
             screen = Screen.Intro;
 
+            seconds = 0f;
 
         }
 
@@ -76,6 +82,10 @@ namespace Monogame_summative_Assignment
 
         protected override void Update(GameTime gameTime)
         {
+            if (screen == Screen.Screen1 || screen == Screen.Screen2)
+            {
+                seconds += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            }
 
             mouseState = Mouse.GetState();
             
@@ -90,6 +100,11 @@ namespace Monogame_summative_Assignment
                 {
                     screen = Screen.Screen1;
                 }
+            }
+
+            if (seconds > 15)
+            {
+                screen = Screen.Screen2;
             }
 
             base.Update(gameTime);
@@ -116,6 +131,16 @@ namespace Monogame_summative_Assignment
                 _spriteBatch.Draw(sidewalkTexture, new Vector2(0, 0), Color.White);
 
                 _spriteBatch.Draw(billyBoxTexture, billyBoxRect, Color.White);
+            }
+
+            if (screen == Screen.Screen2)
+            {
+                _spriteBatch.Draw(sidewalkTexture, new Vector2(0, 0), Color.White);
+
+                _spriteBatch.Draw(billyBoxTexture, billyBoxRect, Color.White);
+
+                _spriteBatch.Draw(bombTexture, bombRect, Color.White);
+
             }
 
             _spriteBatch.End();
