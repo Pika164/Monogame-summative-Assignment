@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.ComponentModel.Design;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -24,16 +26,31 @@ namespace Monogame_summative_Assignment
         Texture2D bombTexture;
         Texture2D sidewalkTexture;
         Texture2D sidewalkIntroTexture;
+        Texture2D movingSidewalkTexture;
 
         Rectangle billyBoxRect;
         Rectangle bombRect;
+        Rectangle movingSidewalkRect;
         Rectangle window;
+
+        Vector2 nukeFalling;
+        Vector2 movingSidewalkSpeed;
 
         Screen screen;
 
         MouseState mouseState;
 
         float seconds;
+
+        SoundEffect walkingSound;
+        SoundEffectInstance walkingInstance;
+
+        SoundEffect nukeExplosion;
+        SoundEffectInstance nukeExplosionInstance;
+
+        SoundEffect hiSound;
+        SoundEffectInstance hiInstance;
+
 
         public Game1()
         {
@@ -55,7 +72,13 @@ namespace Monogame_summative_Assignment
 
             billyBoxRect = new Rectangle(-50,250,250,200);
 
-            bombRect = new Rectangle(0,0,250,200);
+            bombRect = new Rectangle(150,-15,250,200);
+
+            movingSidewalkRect = new Rectangle(0,0,1600,600);
+
+            movingSidewalkSpeed = new Vector2(-1,0);
+
+            nukeFalling = new Vector2(0,5);
 
             screen = Screen.Intro;
 
@@ -77,18 +100,30 @@ namespace Monogame_summative_Assignment
 
             sidewalkIntroTexture = Content.Load<Texture2D>("sidewalkIntro");
 
+            movingSidewalkTexture = Content.Load<Texture2D>("movingSidewalk");
+
             startFont = Content.Load<SpriteFont>("spriteFont");
+
+            walkingSound = Content.Load<SoundEffect>("walkingSounds");
+
+            walkingInstance = walkingSound.CreateInstance();
+
+            nukeExplosion = Content.Load<SoundEffect>("nukeExplosion");
+
+            nukeExplosionInstance = nukeExplosion.CreateInstance();
+
+            hiSound = Content.Load<SoundEffect>("hisound");
+
+            hiInstance = hiSound.CreateInstance();
         }
 
         protected override void Update(GameTime gameTime)
         {
-            if (screen == Screen.Screen1 || screen == Screen.Screen2)
-            {
-                seconds += (float)gameTime.ElapsedGameTime.TotalSeconds;
-            }
 
             mouseState = Mouse.GetState();
-            
+
+            movingSidewalkRect.X += (int)movingSidewalkSpeed.X;
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
@@ -102,11 +137,20 @@ namespace Monogame_summative_Assignment
                 }
             }
 
-            if (seconds > 15)
+            if (screen == Screen.Screen1)
+            {
+                walkingInstance.Play();
+            }
+
+            if (walkingInstance.State == SoundState.Stopped && screen == Screen.Screen1)
             {
                 screen = Screen.Screen2;
             }
 
+            if (movingSidewalkRect.Right == window.Width)
+            {
+                movingSidewalkRect.X = 0;
+            }
             base.Update(gameTime);
         }
 
@@ -128,7 +172,7 @@ namespace Monogame_summative_Assignment
             if (screen == Screen.Screen1)
             {
 
-                _spriteBatch.Draw(sidewalkTexture, new Vector2(0, 0), Color.White);
+                _spriteBatch.Draw(movingSidewalkTexture, movingSidewalkRect, Color.White);
 
                 _spriteBatch.Draw(billyBoxTexture, billyBoxRect, Color.White);
             }
