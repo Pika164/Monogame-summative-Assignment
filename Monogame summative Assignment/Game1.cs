@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.Design;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -12,6 +11,8 @@ namespace Monogame_summative_Assignment
         Intro,
         Screen1,
         Screen2,
+        Screen3,
+        Screen4,
         End
     }
 
@@ -27,11 +28,16 @@ namespace Monogame_summative_Assignment
         Texture2D sidewalkTexture;
         Texture2D sidewalkIntroTexture;
         Texture2D movingSidewalkTexture;
+        Texture2D explosionTexture;
+        Texture2D ruinedSidewalkTexture;
+        Texture2D ratTexture;
 
         Rectangle billyBoxRect;
         Rectangle bombRect;
         Rectangle movingSidewalkRect;
         Rectangle window;
+        Rectangle explosionRect;
+        Rectangle ratRect;
 
         Vector2 nukeFalling;
         Vector2 movingSidewalkSpeed;
@@ -41,6 +47,8 @@ namespace Monogame_summative_Assignment
         MouseState mouseState;
 
         float seconds;
+
+        bool explode;
 
         SoundEffect walkingSound;
         SoundEffectInstance walkingInstance;
@@ -70,19 +78,25 @@ namespace Monogame_summative_Assignment
             _graphics.PreferredBackBufferHeight = window.Height;
             _graphics.ApplyChanges();
 
-            billyBoxRect = new Rectangle(-50,250,250,200);
+            billyBoxRect = new Rectangle(-50, 250, 250, 200);
 
-            bombRect = new Rectangle(150,-15,250,200);
+            ratRect = new Rectangle(-50, 250, 450, 300);
 
-            movingSidewalkRect = new Rectangle(0,0,1600,600);
+            bombRect = new Rectangle(150, 0, 250, 200);
 
-            movingSidewalkSpeed = new Vector2(-1,0);
+            movingSidewalkRect = new Rectangle(0, 0, 1600, 600);
 
-            nukeFalling = new Vector2(0,5);
+            movingSidewalkSpeed = new Vector2(-1, 0);
+
+            nukeFalling = new Vector2(0, 2);
+
+            explosionRect = new Rectangle(0, 0, 800, 600);
 
             screen = Screen.Intro;
 
             seconds = 0f;
+
+            explode = false;
 
         }
 
@@ -102,6 +116,12 @@ namespace Monogame_summative_Assignment
 
             movingSidewalkTexture = Content.Load<Texture2D>("movingSidewalk");
 
+            explosionTexture = Content.Load<Texture2D>("explosionCool");
+
+            ruinedSidewalkTexture = Content.Load<Texture2D>("ruinedSidewalk");
+
+            ratTexture = Content.Load<Texture2D>("rat");
+
             startFont = Content.Load<SpriteFont>("spriteFont");
 
             walkingSound = Content.Load<SoundEffect>("walkingSounds");
@@ -119,10 +139,18 @@ namespace Monogame_summative_Assignment
 
         protected override void Update(GameTime gameTime)
         {
+            seconds += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (seconds > 14)
+            {
+                screen = Screen.Screen2;
+            }
 
             mouseState = Mouse.GetState();
 
             movingSidewalkRect.X += (int)movingSidewalkSpeed.X;
+
+
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
@@ -142,15 +170,47 @@ namespace Monogame_summative_Assignment
                 walkingInstance.Play();
             }
 
-            if (walkingInstance.State == SoundState.Stopped && screen == Screen.Screen1)
+            if (screen == Screen.Screen2)
             {
-                screen = Screen.Screen2;
+                walkingInstance.Stop();
+                bombRect.Y += (int)nukeFalling.Y;
+            }
+
+            if (screen == Screen.Screen3)
+            {
+                nukeExplosionInstance.Play();
+            }
+
+            if (screen == Screen.Screen4)
+            {
+                nukeExplosionInstance.Stop();
+                hiInstance.Play();
+            }
+
+            if (screen == Screen.End)
+            {
+                hiInstance.Stop();
             }
 
             if (movingSidewalkRect.Right == window.Width)
             {
                 movingSidewalkRect.X = 0;
             }
+
+            if (seconds > 18)
+            {
+                explode = true;
+                nukeFalling.Y = 0;
+                bombRect.X = 150;
+                bombRect.Y = 600;
+                screen = Screen.Screen3;
+            }
+
+            if (seconds > 22)
+            {
+                screen = Screen.Screen4;
+            }
+
             base.Update(gameTime);
         }
 
@@ -164,9 +224,9 @@ namespace Monogame_summative_Assignment
 
             if (screen == Screen.Intro)
             {
-                _spriteBatch.Draw(sidewalkIntroTexture, new Vector2(0,0), Color.White);
+                _spriteBatch.Draw(sidewalkIntroTexture, new Vector2(0, 0), Color.White);
 
-                _spriteBatch.DrawString(startFont, "Click to Start", new Vector2(250,525), Color.White);
+                _spriteBatch.DrawString(startFont, "Click to Start", new Vector2(250, 525), Color.White);
             }
 
             if (screen == Screen.Screen1)
@@ -175,6 +235,8 @@ namespace Monogame_summative_Assignment
                 _spriteBatch.Draw(movingSidewalkTexture, movingSidewalkRect, Color.White);
 
                 _spriteBatch.Draw(billyBoxTexture, billyBoxRect, Color.White);
+
+                _spriteBatch.DrawString(startFont, (0 + seconds).ToString("00"), new Vector2(0, 0), Color.White);
             }
 
             if (screen == Screen.Screen2)
@@ -185,6 +247,25 @@ namespace Monogame_summative_Assignment
 
                 _spriteBatch.Draw(bombTexture, bombRect, Color.White);
 
+            }
+
+            if (screen == Screen.Screen3)
+            {
+                _spriteBatch.Draw(sidewalkTexture, new Vector2(0, 0), Color.White);
+
+                _spriteBatch.Draw(billyBoxTexture, billyBoxRect, Color.White);
+
+                _spriteBatch.Draw(explosionTexture, explosionRect, Color.White);
+
+                _spriteBatch.DrawString(startFont, (0 + seconds).ToString("00"), new Vector2(0, 0), Color.White);
+
+            }
+
+            if (screen == Screen.Screen4)
+            {
+                _spriteBatch.Draw(ruinedSidewalkTexture, new Vector2(0,0), Color.White);
+
+                _spriteBatch.Draw(ratTexture, ratRect, Color.White);
             }
 
             _spriteBatch.End();
