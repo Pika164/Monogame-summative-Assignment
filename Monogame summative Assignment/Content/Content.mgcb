@@ -49,6 +49,12 @@
 /processorParam:TextureFormat=Color
 /build:ending.png
 
+#begin endingMusic.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:endingMusic.wav
+
 #begin explosionCool.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -66,6 +72,12 @@
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:hisound.wav
+
+#begin introMusic.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:introMusic.wav
 
 #begin movingSidewalk.png
 /importer:TextureImporter

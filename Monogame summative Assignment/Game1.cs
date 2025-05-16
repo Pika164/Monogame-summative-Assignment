@@ -61,7 +61,6 @@ namespace Monogame_summative_Assignment
         SoundEffect hiSound;
         SoundEffectInstance hiInstance;
 
-
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -141,6 +140,7 @@ namespace Monogame_summative_Assignment
             hiSound = Content.Load<SoundEffect>("hisound");
 
             hiInstance = hiSound.CreateInstance();
+
         }
 
         protected override void Update(GameTime gameTime)
@@ -187,8 +187,6 @@ namespace Monogame_summative_Assignment
 
             if (screen == Screen.Screen1)
             {
-                seconds = 0f;
-                seconds += (float)gameTime.ElapsedGameTime.TotalSeconds;
                 walkingInstance.Play();
             }
 
@@ -258,8 +256,6 @@ namespace Monogame_summative_Assignment
                 _spriteBatch.Draw(sidewalkIntroTexture, new Vector2(0, 0), Color.White);
 
                 _spriteBatch.DrawString(startFont, "Click to Start", new Vector2(250, 525), Color.White);
-
-                _spriteBatch.DrawString(startFont, (0 + seconds).ToString("00"), new Vector2(0, 0), Color.White);
             }
 
             if (screen == Screen.Screen1)
@@ -268,8 +264,6 @@ namespace Monogame_summative_Assignment
                 _spriteBatch.Draw(movingSidewalkTexture, movingSidewalkRect, Color.White);
 
                 _spriteBatch.Draw(billyBoxTexture, billyBoxRect, Color.White);
-
-                _spriteBatch.DrawString(startFont, (0 + seconds).ToString("00"), new Vector2(0, 0), Color.White);
             }
 
             if (screen == Screen.Screen2)
@@ -289,8 +283,6 @@ namespace Monogame_summative_Assignment
                 _spriteBatch.Draw(billyBoxTexture, billyBoxRect, Color.White);
 
                 _spriteBatch.Draw(explosionTexture, explosionRect, Color.White);
-
-                _spriteBatch.DrawString(startFont, (0 + seconds).ToString("00"), new Vector2(0, 0), Color.White);
 
             }
 
