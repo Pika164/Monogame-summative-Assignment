@@ -31,6 +31,7 @@ namespace Monogame_summative_Assignment
         Texture2D explosionTexture;
         Texture2D ruinedSidewalkTexture;
         Texture2D ratTexture;
+        Texture2D endingScreenTexture;
 
         Rectangle billyBoxRect;
         Rectangle bombRect;
@@ -49,6 +50,7 @@ namespace Monogame_summative_Assignment
         float seconds;
 
         bool explode;
+        bool started;
 
         SoundEffect walkingSound;
         SoundEffectInstance walkingInstance;
@@ -98,6 +100,8 @@ namespace Monogame_summative_Assignment
 
             explode = false;
 
+            started = false;
+
         }
 
         protected override void LoadContent()
@@ -122,6 +126,8 @@ namespace Monogame_summative_Assignment
 
             ratTexture = Content.Load<Texture2D>("rat");
 
+            endingScreenTexture = Content.Load<Texture2D>("ending");
+
             startFont = Content.Load<SpriteFont>("spriteFont");
 
             walkingSound = Content.Load<SoundEffect>("walkingSounds");
@@ -141,6 +147,11 @@ namespace Monogame_summative_Assignment
         {
             seconds += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+            if (screen != Screen.Intro)
+            {
+                started = true;
+            }
+
             if (seconds > 14)
             {
                 screen = Screen.Screen2;
@@ -149,8 +160,6 @@ namespace Monogame_summative_Assignment
             mouseState = Mouse.GetState();
 
             movingSidewalkRect.X += (int)movingSidewalkSpeed.X;
-
-
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
@@ -165,8 +174,21 @@ namespace Monogame_summative_Assignment
                 }
             }
 
+            if (screen == Screen.End)
+            {
+                if (mouseState.LeftButton == ButtonState.Pressed)
+                {
+                    if (window.Contains(mouseState.Position))
+                    {
+                        Exit();
+                    }
+                }
+            }
+
             if (screen == Screen.Screen1)
             {
+                seconds = 0f;
+                seconds += (float)gameTime.ElapsedGameTime.TotalSeconds;
                 walkingInstance.Play();
             }
 
@@ -211,6 +233,15 @@ namespace Monogame_summative_Assignment
                 screen = Screen.Screen4;
             }
 
+            if (seconds > 24)
+            {
+                screen = Screen.End;
+            }
+
+            if (seconds > 35)
+            {
+                Exit();
+            }
             base.Update(gameTime);
         }
 
@@ -227,6 +258,8 @@ namespace Monogame_summative_Assignment
                 _spriteBatch.Draw(sidewalkIntroTexture, new Vector2(0, 0), Color.White);
 
                 _spriteBatch.DrawString(startFont, "Click to Start", new Vector2(250, 525), Color.White);
+
+                _spriteBatch.DrawString(startFont, (0 + seconds).ToString("00"), new Vector2(0, 0), Color.White);
             }
 
             if (screen == Screen.Screen1)
@@ -266,6 +299,11 @@ namespace Monogame_summative_Assignment
                 _spriteBatch.Draw(ruinedSidewalkTexture, new Vector2(0,0), Color.White);
 
                 _spriteBatch.Draw(ratTexture, ratRect, Color.White);
+            }
+
+            if (screen == Screen.End)
+            {
+                _spriteBatch.Draw(endingScreenTexture, new Vector2(0,0), Color.White);
             }
 
             _spriteBatch.End();
